@@ -1,6 +1,7 @@
 import { create, GetState, SetState } from "zustand";
 import { persist } from "zustand/middleware";
 
+// Agregar 'department' al tipo User
 type User = {
   _id: string;
   firstName: string;
@@ -10,16 +11,15 @@ type User = {
   phone: string;
   isEmailVerified: boolean;
   profilePicture: string;
-  loginId: string,
-  accountType: string,
-  credits: number,
-  questionAsked: number,
-  username: string,
-  whom: string
-  standard: string
-
+  loginId: string;
+  accountType: string;
+  credits: number;
+  questionAsked: number;
+  username: string;
+  whom: string;
+  standard: string;
+  department: string;  // <-- Añadir el campo department aquí
 };
-
 
 type AuthState = {
   user: User | null;
@@ -31,8 +31,7 @@ type AuthState = {
 };
 
 const useAuthStore = create<AuthState>()(
-  persist((set: SetState<AuthState>, get: GetState<AuthState>) =>
-  ({
+  persist((set: SetState<AuthState>, get: GetState<AuthState>) => ({
     user: null,
     loggedIn: false,
     authLoading: false,
@@ -60,12 +59,8 @@ const useAuthStore = create<AuthState>()(
         loggedIn: false,
         user: null,
       })),
-  }),
-    { name: "user" }
-  )
-)
+  }), { name: "user" })
+);
 
 export default useAuthStore;
-
-
 

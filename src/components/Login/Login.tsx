@@ -19,6 +19,7 @@ import Script from "next/script";
 type FormValue = {
   email: string;
   password: string;
+  department: string;
 };
 
 const Login = () => {
@@ -42,16 +43,23 @@ const Login = () => {
   });
 
   const onSubmit = (formData: FormValue) => {
+    // Copia y manipula los datos del formulario
     let data = JSON.parse(JSON.stringify(formData));
-    console.log("formData")
-    console.log(formData)
-    console.log("data")
-    console.log(data)
+    console.log("formData", formData);
+    console.log("data", data);
+    
+    // Convierte el email a minúsculas
     data.email = data.email.toLowerCase();
+  
+    // Guarda el departamento seleccionado en localStorage
+    localStorage.setItem('department', data.department);
+  
+    // Ejecuta la mutación si no hay carga en curso
     if (!isLoading && !lodingGoogleAuth) {
       mutate(data);
     }
   };
+  
 
   const { mutate, isLoading } = useMutation(
     (data: any) => api.post("/auth/login/", data),
@@ -365,114 +373,90 @@ const Login = () => {
               </div>
 
 
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="px-5 space-y-4"
-              >
-                <div>
-                  {/* <h1 className="flex justify-center text-center text-[#d4d4d4]">
-                    OR
-                  </h1> */}
+              <form onSubmit={handleSubmit(onSubmit)} className="px-5 space-y-4">
+  {/* Campo para el email */}
+  <div>
+    <label className="block text-[14px] text-gray-400">E-mail</label>
+    <div className="relative mt-[7px] rounded-md shadow-sm">
+      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-[14px]">
+        <img src="/images/mail.svg" className="text-gray" aria-hidden="true" alt="mail-icon" />
+      </div>
+      <input
+        type="email"
+        {...register("email", { required: "Email is required" })}
+        autoComplete="current-email"
+        className="block h-[44px] w-full rounded-lg border-0 pl-10 text-[16px] font-light text-gray-400"
+        placeholder="you@example.com"
+      />
+      {errors.email && (
+        <p className="text-xs text-orange-700">{errors.email.message}</p>
+      )}
+    </div>
+  </div>
 
-                </div>
-                <div>
-                  <label className="block text-[14px] text-gray-400">
-                    E-mail
-                  </label>
-                  <div className="relative mt-[7px]  rounded-md shadow-sm">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-[14px]">
-                      <img
-                        src="/images/mail.svg"
-                        className=" text-gray"
-                        aria-hidden="true"
-                        alt="mail-icon"
-                      />
-                    </div>
-                    <input
-                      type="email"
-                      {...register("email", {
-                        required: "Email is required",
-                      })}
-                      // name="email"
-                      id="email"
-                      autoComplete="current-email"
-                      className="block h-[44px] w-full rounded-lg border-0 pl-10 text-[16px] font-light text-gray-400"
-                      placeholder="you@example.com"
-                    />
-                    {errors.email && (
-                      <p className="text-xs text-orange-700">
-                        {errors.email.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-[14px] text-gray-400">
-                    Password
-                  </label>
-                  <div className="relative mt-[7px]  rounded-md shadow-sm">
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-[14px]">
-                      <img
-                        src="/images/lock.svg"
-                        className=" text-gray"
-                        aria-hidden="true"
-                        alt="mail-icon"
-                      />
-                    </div>
-                    <input
-                      type="password"
-                      {...register("password", {
-                        required: "password is required",
-                      })}
-                      autoComplete="current-password"
-                      className="block h-[44px] w-full rounded-lg border-0 pl-10 text-[16px] font-light text-gray-400"
-                      placeholder="Your password"
-                    />
-                    {errors.password && (
-                      <p className="text-xs text-orange-700">
-                        {errors.password.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div>
-                    {" "}
-                    <p className="flex items-start">
-                      {" "}
-                      <input type="checkbox" className="mr-2 mt-1" />
-                      <label className="text-sm ">Remember me.</label>
-                    </p>
-                  </div>
-                  <div>
-                    <button type="button" onClick={(e) => {
-                      e.preventDefault()
-                      router.push('/forget')
-                    }} className="text-sm hover:underline duration-300 transition-all">
-                      Forget Password?
-                    </button>
-                  </div>
-                </div>
-                <div>
-                  {isLoading || lodingGoogleAuth ? (
-                    <button
-                      type="submit"
-                      className="flex flex-row items-center w-full justify-center nav-btn bg-mainBtn hover:bg-opacity-80 duration-300 transition-all"
-                      disabled
-                    >
-                      <span className="">
-                        <BeatLoader color="white" />
-                      </span>
-                    </button>
-                  ) : (
-                    <button
-                      className="flex  h-12 bg-sideBarBg flex-row items-center w-full justify-center nav-btn bg-mainBtn hover:bg-opacity-80 duration-300 transition-all"
-                    >
-                      <span className="">Login</span>
-                    </button>
-                  )}
-                </div>
-              </form>
+  {/* Campo para la contraseña */}
+  <div>
+    <label className="block text-[14px] text-gray-400">Password</label>
+    <div className="relative mt-[7px] rounded-md shadow-sm">
+      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-[14px]">
+        <img src="/images/lock.svg" className="text-gray" aria-hidden="true" alt="mail-icon" />
+      </div>
+      <input
+        type="password"
+        {...register("password", { required: "Password is required" })}
+        autoComplete="current-password"
+        className="block h-[44px] w-full rounded-lg border-0 pl-10 text-[16px] font-light text-gray-400"
+        placeholder="Your password"
+      />
+      {errors.password && (
+        <p className="text-xs text-orange-700">{errors.password.message}</p>
+      )}
+    </div>
+  </div>
+
+  {/* Campo para seleccionar el departamento */}
+  <div>
+    <label className="block text-[14px] text-gray-400">Department</label>
+    <div className="relative mt-[7px] rounded-md shadow-sm">
+      <select
+        {...register("department", { required: "Department is required" })}
+        className="block h-[44px] w-full rounded-lg border-0 pl-3 text-[16px] font-light text-gray-400"
+      >
+        <option value="">Select a department</option>
+        <option value="Account Manager">Account Manager</option>
+        <option value="Customer Service">Customer Service</option>
+        <option value="Sales">Sales</option>
+        <option value="Operations">Operations</option>
+        <option value="Finance">Finance</option>
+        <option value="IT Support">IT Support</option>
+        <option value="Human Resources">Human Resources</option>
+      </select>
+      {errors.department && (
+        <p className="text-xs text-orange-700">{errors.department.message}</p>
+      )}
+    </div>
+  </div>
+
+  {/* Botón de envío */}
+  <div>
+    {isLoading || lodingGoogleAuth ? (
+      <button
+        type="submit"
+        className="flex flex-row items-center w-full justify-center nav-btn bg-mainBtn hover:bg-opacity-80 duration-300 transition-all"
+        disabled
+      >
+        <span>
+          <BeatLoader color="white" />
+        </span>
+      </button>
+    ) : (
+      <button className="flex h-12 bg-sideBarBg flex-row items-center w-full justify-center nav-btn bg-mainBtn hover:bg-opacity-80 duration-300 transition-all">
+        <span>Login</span>
+      </button>
+    )}
+  </div>
+</form>
+
 
               <hr className=" w-[100%]" />
               <div className="text-center">
