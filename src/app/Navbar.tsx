@@ -14,14 +14,14 @@ import ProfilePicture from "@/components/ChatPage/ProfilePicture";
 import useChatSideBarStore from "@/store/chatSidebarStore";
 import { IoCloseCircle, IoMenu } from "react-icons/io5";
 
-
 const Navbar = () => {
   const currentRoute = usePathname();
   const user = useAuthStore((state: any) => state.user);
   const signOut = useAuthStore((state: any) => state.signOut);
   const [isTop, setIsTop] = useState(true);
   const { showSideBar, setShowSideBar } = useChatSideBarStore();
-  const pathname = usePathname()
+  const pathname = usePathname();
+
   useEffect(() => {
     const handleScroll = () => {
       setIsTop(window.scrollY === 0);
@@ -33,7 +33,6 @@ const Navbar = () => {
     };
   }, []);
 
-
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -43,7 +42,6 @@ const Navbar = () => {
       signOut();
     },
     onError: ({ response }: any) => {
-      // console.log('er',response)
       cogoToast.error(response?.data?.message);
     },
   });
@@ -78,30 +76,27 @@ const Navbar = () => {
   return (
     <>
       <div
-        className={`navbar border-b-2 border-mainSecond from-[#1a012b] to-[#111111]   text-whiteText sm:p-2 p-2  h-[70px]  ${isTop ? "top" : ""
-          }`}
+        className={`navbar border-b-2 border-mainSecond from-[#1a012b] to-[#111111] text-whiteText sm:p-2 p-2 h-[70px] ${isTop ? "top" : ""}`}
       >
         <div className="sm:px-5 h-full flex items-center w-full">
-          <div className="flex flex-row items-center gap-3 w-full ">
-            <div className="flex justify-between items-center w-full ">
-              {" "}
+          <div className="flex flex-row items-center gap-3 w-full">
+            <div className="flex justify-between items-center w-full">
               <div className="flex gap-2 items-center">
-                {
-                  ((pathname.includes("/chatPage") || pathname == "/")) &&
+                {(pathname.includes("/chatPage") || pathname === "/") && (
                   <div className="block md:hidden">
-                    {
-                      showSideBar ? (
-                        <>
-                          <IoCloseCircle onClick={() => setShowSideBar(false)} className="cursor-pointer text-3xl mb-2" />
-                        </>
-                      ) : (
-                        <>
-                          <IoMenu onClick={() => setShowSideBar(true)} className="cursor-pointer text-3xl mb-2" />
-                        </>
-                      )
-                    }
+                    {showSideBar ? (
+                      <IoCloseCircle
+                        onClick={() => setShowSideBar(false)}
+                        className="cursor-pointer text-3xl mb-2"
+                      />
+                    ) : (
+                      <IoMenu
+                        onClick={() => setShowSideBar(true)}
+                        className="cursor-pointer text-3xl mb-2"
+                      />
+                    )}
                   </div>
-                }
+                )}
                 <Link href={"/"} className="font-bold text-lg">
                   <Image
                     src="/images/logo----.png"
@@ -112,45 +107,25 @@ const Navbar = () => {
                   />{" "}
                 </Link>
               </div>
-              <div className="hidden ">
-                <div className="flex flex-row gap-5">
-                  <Link href="/">
-                    <button className="flex flex-row items-center gap-1 nav-btn hover:bg-gradient-radial bg-gradient-to-r from-pink-500 to-blue-500 duration-900 transition-all">
-                      <Image
-                        src="/images/navbar/explore.svg"
-                        width={20}
-                        height={20}
-                        alt="Img"
-                      />{" "}
-                      <span className="hidden xl:block">Explore</span>
-                    </button>
-                  </Link>
-
-                  <Link href="/subscription">
-                    <button className="flex flex-row items-center gap-1 nav-btn hover:bg-gradient-radial bg-gradient-to-r from-pink-500 to-blue-500 duration-900 transition-all">
-
-                      {" "}
-                      <FaCrown className="text-[#fabd3a]" />{" "}
-                      <span className="hidden xl:block text-[#ffffffc0]">
-                        {" "}
-                        Get More With{" "}
-                        <span className="text-white font-bold">Premium</span>
-                      </span>
-                    </button>
-                  </Link>
-                </div>
-              </div>
               <div className="">
-                <div className="flex flex-row gap-5 z-100">
+                <div className="flex flex-row gap-5 z-100 items-center">
                   {user ? (
                     <>
-                      <div className="flex justify-center items-center ">
+                      <div className="flex items-center">
+                        {/* Información del usuario */}
+                        <div className="flex flex-col text-right mr-2">
+                          <span className="text-sm font-semibold">
+                            {user.firstName} {user.lastName} {user.department}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {user.department}
+                          </span>
+                        </div>
 
                         <Menu
                           as="div"
                           className="flex justify-center items-center relative text-left"
                         >
-                          {/* <div className="flex justify-center items-center"> */}
                           <Menu.Button className="flex justify-center items-center w-full rounded-full text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
                             <ProfilePicture
                               size={12}
@@ -158,7 +133,6 @@ const Navbar = () => {
                               path={user.profilePicture}
                             />
                           </Menu.Button>
-                          {/* </div> */}
                           <Transition
                             as={Fragment}
                             enter="transition ease-out duration-100"
@@ -169,58 +143,46 @@ const Navbar = () => {
                             leaveTo="transform opacity-0 scale-95"
                           >
                             <Menu.Items className="absolute z-100 right-16 mt-32 translate-x-1/4 w-56 origin-top-right divide-y rounded-md backdrop-blur-lg bg-[#0000007f] bg-BtnBg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                              <div className="px-1 py-1 ">
-                                <Menu.Item >
+                              <div className="px-1 py-1">
+                                <Menu.Item>
                                   {({ active }) => (
-                                    <div>
-
-                                      <Link
-                                        className={`${active
-                                          ? " bg-creamBG  text-darkText"
-                                          : "text-white"
-                                          } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                                        href="/user-profile"
-                                        onClick={closeMobileMenu}
-                                      >
-                                        Profile
-                                      </Link>
-                                    </div>
-
+                                    <Link
+                                      className={`${active
+                                        ? " bg-creamBG  text-darkText"
+                                        : "text-white"
+                                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                      href="/user-profile"
+                                      onClick={closeMobileMenu}
+                                    >
+                                      Profile
+                                    </Link>
                                   )}
                                 </Menu.Item>
                                 <Menu.Item>
                                   {({ active }) => (
-                                    <div>
-
-                                      <Link
-                                        className={`${active
-                                          ? " bg-creamBG  text-darkText"
-                                          : "text-white"
-                                          } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                                        href="/plandetails"
-                                        onClick={closeMobileMenu}
-                                      >
-                                        My Plan
-                                      </Link>
-                                    </div>
-
+                                    <Link
+                                      className={`${active
+                                        ? " bg-creamBG  text-darkText"
+                                        : "text-white"
+                                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                      href="/plandetails"
+                                      onClick={closeMobileMenu}
+                                    >
+                                      My Plan
+                                    </Link>
                                   )}
                                 </Menu.Item>
                                 <Menu.Item>
                                   {({ active }) => (
-                                    <div>
-
-                                      <button
-                                        className={`${active
-                                          ? " bg-creamBG  text-darkText"
-                                          : "text-white"
-                                          } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
-                                        onClick={() => logout()}
-                                      >
-                                        Logout
-                                      </button>
-                                    </div>
-
+                                    <button
+                                      className={`${active
+                                        ? " bg-creamBG  text-darkText"
+                                        : "text-white"
+                                        } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                                      onClick={() => logout()}
+                                    >
+                                      Logout
+                                    </button>
                                   )}
                                 </Menu.Item>
                               </div>
@@ -230,22 +192,20 @@ const Navbar = () => {
                       </div>
                     </>
                   ) : (
-                    <>
-                      <Link href="/login" className="hover:scale-105 duration-500 ease-in-out ">
-                        <button className=" p-4 text-sm sm:text-xl font-[500] italic shadow-lg rounded-lg py-2  text-white bg-sideBarBtnBg hover:hoverBtnBg ">
-                          Login
-                        </button>
-                      </Link>
-
-                    </>
+                    <Link
+                      href="/login"
+                      className="hover:scale-105 duration-500 ease-in-out"
+                    >
+                      <button className="p-4 text-sm sm:text-xl font-[500] italic shadow-lg rounded-lg py-2 text-white bg-sideBarBtnBg hover:hoverBtnBg">
+                        Login
+                      </button>
+                    </Link>
                   )}
                 </div>
               </div>
             </div>
-
           </div>
         </div>
-
       </div>
     </>
   );
