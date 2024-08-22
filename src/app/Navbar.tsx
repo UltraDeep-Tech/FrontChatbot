@@ -115,7 +115,7 @@ const Navbar = () => {
                         {/* Información del usuario */}
                         <div className="flex flex-col text-right mr-2">
                           <span className="text-sm font-semibold">
-                            {user.firstName} {user.lastName} {user.department}
+                            {user.firstName} {user.lastName}
                           </span>
                           <span className="text-xs text-gray-400">
                             {user.department}

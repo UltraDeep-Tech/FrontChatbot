@@ -23,24 +23,25 @@ export default function AuthGaurd({
     // alert(pathname)
     useEffect(() => {
         api.get('/auth/authme').then((res) => {
-            console.log(res?.data, 'authme')
-            signIn(res.data)
-            if (false) {
-                cogoToast.warn("Please verify your account by clicking on the link sent to your email. Kindly check your Inbox and Spam folder for it", { hideAfter: 5, toastContainerID: "isEmailVerified" })
+            console.log(res?.data, 'authme');
+            if (res?.data?.department) {
+                // Asegura que el department esté en el objeto de usuario que se guarda en el estado
+                signIn(res.data);
+            } else {
+                console.error("El usuario no tiene un department asignado.");
+            }
+            if (!res.data.isEmailVerified) {
+                cogoToast.warn("Please verify your account by clicking on the link sent to your email. Kindly check your Inbox and Spam folder for it", { hideAfter: 5, toastContainerID: "isEmailVerified" });
             }
         }).catch(({ response }) => {
-            console.log('error')
-            console.log('authme')
-
-            signOut()
-            if (pathname.includes("/chatPage") || pathname == "/userProfile") {
-                router.push('/login')
+            console.log('Error en authme');
+            signOut();
+            if (pathname.includes("/chatPage") || pathname === "/userProfile") {
+                router.push('/login');
             }
-
-        })
-        return () => {
-        }
-    }, [])
+        });
+    }, []);
+    
 
     return (
         <>
