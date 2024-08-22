@@ -15,6 +15,13 @@ import FacebookLogin from "react-facebook-login";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
+
 type FormValue = {
   firstName: string;
   lastName: string;
@@ -73,7 +80,6 @@ const Register = () => {
     {
       enabled: !!token,
       onSuccess: (res) => {
-        console.log(res.data);
         setReadOnly(true);
         setEmail(res?.data?.email);
         setValue("email", res?.data?.email);
@@ -88,14 +94,14 @@ const Register = () => {
     (data) => api.post("auth/register", data),
     {
       onSuccess: (res: any) => {
-        console.log(res);
+        // Guardar el departamento en localStorage
+        localStorage.setItem('department', res.data.department);
         signIn(res.data);
         setIsOpen(true);
         router.push("/");
         reset();
       },
       onError: ({ response }: any) => {
-        console.log(response.data);
         cogoToast.error(response?.data?.message);
       },
     }
@@ -114,7 +120,7 @@ const Register = () => {
     (data: any) => api.post("auth/google", data),
     {
       onSuccess: (res) => {
-        console.log(res.data);
+        localStorage.setItem('department', res.data.user.department);
         signIn(res.data.user);
         reset();
         if (res.data.message === "register") {
@@ -134,7 +140,6 @@ const Register = () => {
 
   const handleCallbackResponse = (response: any) => {
     const userDetails: any = jwtDecode(response.credential);
-    console.log(userDetails);
     gLogin({
       ...userDetails,
       email: userDetails?.email,
@@ -156,34 +161,37 @@ const Register = () => {
         } else {
           buttonWidth = 200;
         }
-        console.log(buttonWidth);
-
-        // @ts-ignore
-        google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleCallbackResponse,
-        });
-        // @ts-ignore
-        google.accounts.id.renderButton(document.getElementById("signIndiv"), {
-          size: "large",
-          width: buttonWidth,
-        });
+  
+        if (window.google) { // Asegúrate de que google esté cargado
+          window.google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCallbackResponse,
+          });
+          window.google.accounts.id.renderButton(
+            document.getElementById("signIndiv"),
+            {
+              size: "large",
+              width: buttonWidth,
+            }
+          );
+        }
       };
-      resizeButton(); // Initial sizing
-
+      resizeButton();
       window.addEventListener("resize", resizeButton);
-
       return () => {
         window.removeEventListener("resize", resizeButton);
       };
     };
     document.body.appendChild(script);
   }, []);
+  
 
   const { mutate: logout } = useMutation(() => api.post("/auth/sign-out/"), {
     onSuccess: (res) => {
       cogoToast.success("Logout successfully");
       signOut();
+      // Eliminar el departamento de localStorage al cerrar sesión
+      localStorage.removeItem('department');
     },
     onError: ({ response }) => {
       cogoToast.error(response?.data?.message);

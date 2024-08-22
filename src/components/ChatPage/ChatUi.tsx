@@ -77,8 +77,10 @@ const ChatUi = ({ showPopUpVoice, setShowPopupVoice, getAns, getAudio, GetSingle
 
       const payload = {
         query: inputMessage,
-        modelId: GetSingleModelData?._id
-      }
+        modelId: GetSingleModelData?._id,
+        user: user?.username, // Agrega el usuario al payload
+            department: user?.department // Agrega el departamento al payload
+      };
       // callAPi(inputMessage, true)
       setMessages([...messages, { text: inputMessage, fromUser: true, createdAt: new Date() }]);
       setInputMessage("")
